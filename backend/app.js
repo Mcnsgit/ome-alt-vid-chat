@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const authRoutes = require('./src/routes/authRoutes')
-
+const path = require("path");
 //require database connection
 const dbConnect = require('./src/db/dbConnect');
 const User = require( './src/models/UserSchema');
