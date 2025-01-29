@@ -35,11 +35,11 @@ app.get("/", (request, response, next) => {
 // register endpoint
 app.post("/register", async (request, response) => {
   try {
-    const hashedPassword = await bcrypt.hash(request.body.password, 10);
+
     
     const user = new User({
       email: request.body.email,
-      password: hashedPassword,
+      password: request.body.password,
       // Only set username if provided
       ...(request.body.username && { username: request.body.username })
     });
