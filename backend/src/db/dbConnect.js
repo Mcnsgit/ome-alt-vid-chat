@@ -7,11 +7,10 @@ async function dbConnect() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("Connected to MongoDB");
+    console.log("Successfully connected to MongoDB.");
   } catch (error) {
-    console.log("Unable to connect to MongoDB Atlas!");
-    console.error(error);
-    process.exit(1); // Exit if we can't connect to the database
+    console.error("MongoDB connection error:", error);
+    process.exit(1);  // Exit if we can't connect to the database
   }
 }
 

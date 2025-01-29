@@ -8,16 +8,21 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, "Please provide an Email!"],
-    unique: [true, "Email Exist"],
+    unique: [true, "Email already exists"],
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: function(v) {
+        return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
+      },
+      message: "Please enter a valid email"
+    }
   },
-
-  //   password field
   password: {
     type: String,
     required: [true, "Please provide a password!"],
-    unique: false,
+    minlength: [6, "Password should be at least 6 characters"]
   },
-
   //For anonymous users
     isAnonymous: { type: Boolean, default: false },
     anonymousId: { type: String, unique: true },

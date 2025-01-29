@@ -10,19 +10,16 @@ export default function Register() {
   const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
-    // prevent the form from refreshing the whole page
     e.preventDefault();
-    setError("");
-
-    // set configurations
+  
+    console.log("Attempting registration with:", { email, password });
+  
     const configuration = {
       method: "post",
       url: "https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com/register",
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
       },
-      withCredentials: true,
       data: {
         email,
         password,
@@ -31,12 +28,11 @@ export default function Register() {
   
     axios(configuration)
       .then((result) => {
+        console.log("Registration successful:", result);
         setRegister(true);
-        console.log(result);
-        setError("");
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error("Registration error:", error.response?.data || error);
         setRegister(false);
         setError(error.response?.data?.message || "Registration failed");
       });
