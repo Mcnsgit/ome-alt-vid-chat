@@ -1,25 +1,23 @@
-
 const jwt = require("jsonwebtoken");
 
 module.exports = async (request, response, next) => {
   try {
-    //   get the token from the authorization header
-    const token = await request.headers.authorization.split(" ")[1];
+    const authHeader = request.headers.authorization;
+    
+    if (!authHeader) {
+      return response.status(401).json({
+        message: "Authentication required"
+      });
+    }
 
-    //check if the token matches the supposed origin
-    const decodedToken = await jwt.verify(token, "RANDOM-TOKEN");
-
-    // retrieve the user details of the logged in user
-    const user = await decodedToken;
-
-    // pass the the user down to the endpoints here
-    request.user = user;
-
-    // pass down functionality to the endpoint
+    const token = authHeader.split(" ")[1];
+    const decodedToken = jwt.verify(token, "RANDOM-TOKEN");
+    request.user = decodedToken;
     next();
   } catch (error) {
+    console.error("Auth error:", error);
     response.status(401).json({
-      error: new Error("Invalid request!"),
+      message: "Invalid or expired token"
     });
   }
 };

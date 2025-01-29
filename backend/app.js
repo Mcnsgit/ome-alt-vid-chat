@@ -68,61 +68,56 @@ app.post("/register", async (request, response) => {
 });
 
 // login endpoint
-app.post("/login", (request, response) => {
-  // check if email exists
-  User.findOne({ email: request.body.email })
+app.post("/login", async (request, response) => {
+  try {
+    // check if email and password are provided
+    if (!request.body.email || !request.body.password) {
+      return response.status(400).json({
+        message: "Please provide email and password",
+      });
+    }
+    const user = await User.findOne({ email: request.body.email });
 
     // if email exists
-    .then((user) => {
-      // compare the password entered and the hashed password found
-      bcrypt
-        .compare(request.body.password, user.password)
-
-        // if the passwords match
-        .then((passwordCheck) => {
-
-          // check if password matches
-          if(!passwordCheck) {
-            return response.status(400).send({
-              message: "Passwords does not match",
-              error,
-            });
-          }
-
-          //   create JWT token
-          const token = jwt.sign(
-            {
-              userId: user._id,
-              userEmail: user.email,
-            },
-            "RANDOM-TOKEN",
-            { expiresIn: "24h" }
-          );
-
-          //   return success response
-          response.status(200).send({
-            message: "Login Successful",
-            email: user.email,
-            token,
-          });
-        })
-        // catch error if password do not match
-        .catch((error) => {
-          response.status(400).send({
-            message: "Passwords does not match",
-            error,
-          });
-        });
-    })
-    // catch error if email does not exist
-    .catch((e) => {
-      response.status(404).send({
+    if (!user) {
+      return response.status(404).json({
         message: "Email not found",
-        e,
       });
-    });
-});
+    }
+    //compare password
+    const passwordMatch = await bcrypt.compare(request.body.password, user.password);
+    // if the passwords match
+    if (!passwordCheck) {
+      return response.status(400).json({
+        message: "Invalid password",
+      })
+    }
+    //   create JWT token
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        userEmail: user.email,
+      },
+      "RANDOM-TOKEN",
+      { expiresIn: "24h" }
+    );
 
+    // Return success response
+    response.status(200).json({
+      message: "Login Successful",
+      email: user.email,
+      token,
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
+    });
+
+  } catch (error) {
+    console.error("Login error:", error);
+    response.status(500).json({
+      message: "Login failed",
+      error: error.message
+    });
+  }
+});
 
 // free endpoint
 app.get("/free-endpoint", (request, response) => {
