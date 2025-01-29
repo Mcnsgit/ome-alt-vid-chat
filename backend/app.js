@@ -5,8 +5,8 @@ const dbConnect = require('./src/db/dbConnect');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const User = require( './src/models/UserSchema');
-
-const auth = require("./src/controllers/authController");
+const authRoutes = require('./src/routes/authRoutes')
+const auth = require("./src/middleware/authMiddleware");
 
 // execute database connection
 dbConnect();
@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 // body parser configuration
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use('/api/auth', authRoutes);
 app.get("/", (request, response, next) => {
   response.json({ message: "Hey! This is your server response!" });
   next();

@@ -1,53 +1,106 @@
-const {User} = require('../models/UserSchema');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-
-
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const User = require("../models/UserSchema");
+const { JWT_SECRET, SALT_ROUNDS } = require("../config/authConfig");
+const { generateAnonymousId } = require("../utils/authHelpers.js");
 
 // Register User
 exports.registerUser = async (req, res) => {
-    const { username, email, password } = req.body;
-    try {
-        const newUser = new User({ username, email, password });
-        await newUser.save();
-        res.status(201).json({ message: 'User registered successfully' });
-    } catch (error) {
-        res.status(400).json({ error: 'Error registering user' });
-    }
-};
-exports.register =  async (req, res) => {
-    const { email, password } = req.body;
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 12);
-    const user = await User.create({
-      email: req.body.email,
-      password: hashedPassword,
+    const { username, email, password } = req.body;
+
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      return res.status(400).json({
+        error:
+          existingUser.email === email
+            ? "Email already exists"
+            : "Username is taken",
+      });
+    }
+
+    const user = new User({
+      username,
+      email,
+      password,
+      interests: [],
+      lastActive: new Date(),
     });
 
-    // Send verification email
-    sendVerificationEmail(user.email);
+    await user.save();
 
-    res.status(201).json({ message: "User created" });
+    const token = jwt.sign(
+      { userId: user._id, isAnonymous: false },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        isAnonymous: false,
+      },
+    });
   } catch (error) {
-    res.status(400).json({ error: "Registration failed" });
+    res.status(500).json({ error: "Registration failed" });
   }
 };
+
 // Login User
 exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id, isAnonymous: false },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        isAnonymous: false,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Login failed" });
   }
-
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
-  // Set secure cookie for tokens
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
 };
+
+exports.anonymousLogin = async (req, res) => {
+  try {
+    const user = await User.create({
+      isAnonymous: true,
+      anonymousId: generateAnonymousId(),
+      tempInterests: req.body.interests || [],
+      lastActive: new Date(),
+    });
+
+    const token = jwt.sign(
+      { userId: user._id, isAnonymous: true },
+      JWT_SECRET,
+      { expiresIn: "2h" }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        isAnonymous: true,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Anonymous session creation failed" });
+  }
+};
+
