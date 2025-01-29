@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+
 const cookies = new Cookies();
 
 
@@ -14,15 +15,17 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(false);
+  const [error, setError] = useState("");
   
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     // prevent the form from refreshing the whole page
     e.preventDefault();
+    setError("");
 
     const configuration = {
       method: "post",
-      url: "https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com/register",
+      url: "https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com/login",
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -36,17 +39,19 @@ export default function Login() {
   
     axios(configuration)
       .then((result) => {
+        console.log("Login successful:", result);
         cookies.set("TOKEN", result.data.token, {
-          expires: result.data.expires,
           path: "/",
+          expires: new Date(result.data.expires)
         });
-        window.location.href = "/auth";
         setLogin(true);
-        console.log(result);
+        setError("");
+        window.location.href = "/auth";
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error("Login error:", error);
         setLogin(false);
+        setError(error.response?.data?.message || "Login failed");
       });
   };
   
@@ -93,24 +98,21 @@ export default function Login() {
             placeholder="Password"
           />
         </Form.Group>
+  {/* Error message */}
+  {error && <p className="text-danger">{error}</p>}
 
+{/* Success message */}
+{login && <p className="text-success">Login Successful!</p>}
         {/* submit button */}
         <Button
-          variant="primary"
-          type="submit"
-          onClick={(e) => handleSubmit(e)}
-        >
-          Login
-        </Button>
-
-        {/* display success message */}
-        {login ? (
-          <p className="text-success">You Are Logged in Successfully</p>
-        ) : (
-          <p className="text-danger">You Are Not Logged in</p>
-        )}
-      </Form>
-    </>
+        variant="primary"
+        type="submit"
+        onClick={(e) => handleSubmit(e)}
+      >
+        Login
+      </Button>
+    </Form>
+  </>
   );
 }
 //import { motion } from 'framer-motion';
