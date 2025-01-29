@@ -3,20 +3,17 @@ const bcrypt = require("bcrypt");
 
 // user schema
 const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true },
-  // email field
+  username: { 
+    type: String, 
+    unique: true,
+    sparse: true // This allows multiple null values
+  },
   email: {
     type: String,
     required: [true, "Please provide an Email!"],
     unique: [true, "Email already exists"],
     trim: true,
-    lowercase: true,
-    validate: {
-      validator: function(v) {
-        return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
-      },
-      message: "Please enter a valid email"
-    }
+    lowercase: true
   },
   password: {
     type: String,
@@ -41,16 +38,16 @@ const userSchema = new mongoose.Schema({
     reportedCount: { type: Number, default: 0 },
   });
 
-  // Hash password before saving to database
-  userSchema.pre('save', async function(next) {
-      if (!this.isModified('password')) return next();
-      this.password = await bcrypt.hash(this.password, 10);
-      next();
-  
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
 });
 
-
-module.exports = mongoose.model.Users || mongoose.model("Users", userSchema);
+// Drop and recreate the model to ensure index changes take effect
+mongoose.models = {};
+module.exports = mongoose.model("Users", userSchema);
 // const mongoose = require('mongoose');
 // const bcrypt = require('bcryptjs');
 
