@@ -33,30 +33,38 @@ app.get("/", (request, response, next) => {
 });
 
 // register endpoint
-app.post("/register", (request, response) => {
-  bcrypt
-    .hash(request.body.password, 10)
-    .then((hashedPassword) => {
-      const user = new User({
-        email: request.body.email,
-        password: hashedPassword,
-      });
+app.post("/register", async (request, response) => {
+  try {
+    const hashedPassword = await bcrypt.hash(request.body.password, 10);
+    
+    const user = new User({
+      email: request.body.email,
+      password: hashedPassword,
+      // Only set username if provided
+      ...(request.body.username && { username: request.body.username })
+    });
 
-      return user.save();
-    })
-    .then((result) => {
-      response.status(201).json({
-        message: "User Created Successfully",
-        result,
-      });
-    })
-    .catch((error) => {
-      console.error("Registration error:", error);
-      response.status(500).json({
-        message: "Error creating user",
+    const result = await user.save();
+    response.status(201).json({
+      message: "User Created Successfully",
+      result
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+    
+    // Handle specific error types
+    if (error.code === 11000) {
+      return response.status(400).json({
+        message: "Email already exists",
         error: error.message
       });
+    }
+    
+    response.status(500).json({
+      message: "Error creating user",
+      error: error.message
     });
+  }
 });
 
 // login endpoint
