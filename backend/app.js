@@ -70,35 +70,43 @@ app.post("/register", async (request, response) => {
 // login endpoint
 app.post("/login", async (request, response) => {
   try {
-    // check if email and password are provided
+    console.log("Login attempt for email:", request.body.email);
+    
+    // Check if email and password are provided
     if (!request.body.email || !request.body.password) {
+      console.log("Missing email or password");
       return response.status(400).json({
-        message: "Please provide email and password",
+        message: "Email and password are required"
       });
     }
-    const user = await User.findOne({ email: request.body.email });
 
-    // if email exists
+    // Find user by email
+    const user = await User.findOne({ email: request.body.email });
+    
     if (!user) {
+      console.log("User not found for email:", request.body.email);
       return response.status(404).json({
-        message: "Email not found",
+        message: "Email not found"
       });
     }
-    //compare password
+
+    // Compare password
     const passwordMatch = await bcrypt.compare(request.body.password, user.password);
-    // if the passwords match
-    if (!passwordCheck) {
+    console.log("Password match result:", passwordMatch);
+
+    if (!passwordMatch) {
       return response.status(400).json({
-        message: "Invalid password",
-      })
+        message: "Invalid password"
+      });
     }
-    //   create JWT token
+
+    // Create JWT token
     const token = jwt.sign(
       {
         userId: user._id,
         userEmail: user.email,
       },
-      "RANDOM-TOKEN",
+      process.env.JWT_SECRET || "RANDOM-TOKEN",
       { expiresIn: "24h" }
     );
 
@@ -107,11 +115,11 @@ app.post("/login", async (request, response) => {
       message: "Login Successful",
       email: user.email,
       token,
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
     });
 
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Login error details:", error);
     response.status(500).json({
       message: "Login failed",
       error: error.message
