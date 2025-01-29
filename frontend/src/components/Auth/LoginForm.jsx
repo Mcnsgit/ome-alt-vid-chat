@@ -9,19 +9,18 @@ import { useNavigate } from "react-router-dom";
 
 const cookies = new Cookies();
 
-
 export default function Login() {
-  // initial state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(false);
   const [error, setError] = useState("");
-  
   const navigate = useNavigate();
+
   const handleSubmit = (e) => {
-    // prevent the form from refreshing the whole page
     e.preventDefault();
     setError("");
+    
+    console.log("Attempting login with email:", email);
 
     const configuration = {
       method: "post",
@@ -30,7 +29,6 @@ export default function Login() {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      withCredentials: true,
       data: {
         email,
         password,
@@ -39,40 +37,42 @@ export default function Login() {
   
     axios(configuration)
       .then((result) => {
-        console.log("Login successful:", result);
+        console.log("Login response:", result.data);
         cookies.set("TOKEN", result.data.token, {
           path: "/",
           expires: new Date(result.data.expires)
         });
         setLogin(true);
         setError("");
-        window.location.href = "/auth";
+        // Small delay before redirect to show success message
+        setTimeout(() => {
+          window.location.href = "/auth";
+        }, 1000);
       })
       .catch((error) => {
         console.error("Login error:", error);
         setLogin(false);
-        setError(error.response?.data?.message || "Login failed");
+        setError(error.response?.data?.message || "Login failed. Please try again.");
       });
   };
-  
-  //const handleLogout = (e) => { 
-  //  e.preventDefault();
-  //  cookies.remove("TOKEN", { path: "/" });
-  //  window.location.href = "/auth";
-  //}
-
-  
 
   return (
-    <>
+    <div className="login-form">
       <h2>Login</h2>
+      <div className="mb-3">
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+
+        </div>
+      )}
       <Form onSubmit={(e) => handleSubmit(e)}>
         {/* email */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           onClick={() => navigate("/")}
           className="btn btn-link text-teal poppins mb-5"
-        >
+          >
           <ArrowLeft size={20} className="me-2" />
           Back to Home
         </motion.button>
@@ -84,7 +84,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter email"
-          />
+            />
         </Form.Group>
 
         {/* password */}
@@ -96,10 +96,8 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-          />
+            />
         </Form.Group>
-  {/* Error message */}
-  {error && <p className="text-danger">{error}</p>}
 
 {/* Success message */}
 {login && <p className="text-success">Login Successful!</p>}
@@ -108,13 +106,15 @@ export default function Login() {
         variant="primary"
         type="submit"
         onClick={(e) => handleSubmit(e)}
-      >
+        >
         Login
       </Button>
     </Form>
-  </>
-  );
+  </div>
+</div>
+);
 }
+    
 //import { motion } from 'framer-motion';
 //import { Form } from 'react-bootstrap';
 //import { Mail, Lock, UserCircle2 } from 'lucide-react';
