@@ -1,12 +1,12 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const dbConnect = require('./db/dbConnect');
+const dbConnect = require('./src/db/dbConnect');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
-const User = require( './models/UserSchema');
+const User = require( './src/models/UserSchema');
 
-const auth = require("./controllers/authController");
+const auth = require("./src/controllers/authController");
 
 // execute database connection
 dbConnect();
