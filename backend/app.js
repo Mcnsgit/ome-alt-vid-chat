@@ -1,12 +1,14 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const dbConnect = require('./src/db/dbConnect');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
-const User = require( './src/models/UserSchema');
 const authRoutes = require('./src/routes/authRoutes')
-const auth = require("./src/middleware/authMiddleware");
+
+//require database connection
+const dbConnect = require('./src/db/dbConnect');
+const User = require( './src/models/UserSchema');
+const auth = require("./src/auth.js");
 
 // execute database connection
 dbConnect();
@@ -28,7 +30,8 @@ app.use((req, res, next) => {
 // body parser configuration
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/api/auth', authRoutes);
+
+
 app.get("/", (request, response, next) => {
   response.json({ message: "Hey! This is your server response!" });
   next();
@@ -86,8 +89,9 @@ app.post("/login", (request, response) => {
 
         // if the passwords match
         .then((passwordCheck) => {
+
           // check if password matches
-          if (!passwordCheck) {
+          if(!passwordCheck) {
             return response.status(400).send({
               message: "Passwords does not match",
               error,
@@ -128,6 +132,7 @@ app.post("/login", (request, response) => {
     });
 });
 
+
 // free endpoint
 app.get("/free-endpoint", (request, response) => {
   response.json({ message: "You are free to access me anytime" });
@@ -136,6 +141,21 @@ app.get("/free-endpoint", (request, response) => {
 // authentication endpoint
 app.get("/auth-endpoint", auth, (request, response) => {
   response.send({ message: "You are authorized to access me" });
+});
+// Serve static files from the React build directory
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+//// Use auth routes
+//app.use('/api/auth', authRoutes);
+
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+});
+
+// Handle 404s
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
 });
 
 module.exports = app;

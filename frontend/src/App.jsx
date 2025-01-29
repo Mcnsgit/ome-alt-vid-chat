@@ -1,35 +1,55 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Container, Col, Row, Card , Button} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { Video, UserCircle2, UserPlus } from "lucide-react";
+import Hero from './components/layout/Landing';
+import {motion } from 'framer-motion'
+import AuthButton from './components/layout/common/buttons/AuthButton';
+import LoginForm  from './components/Auth/LoginForm';
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+// App Component
+const App = () => {
+  const navigate = useNavigate();
+  const [showLogin, setShowLogin] = useState(false);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Container className="position-relative py-5">
 
-export default App
+      <Row className="justify-content-center mt-5">
+        <div className="d-flex flex-column gap-3" style={{ maxWidth: '400px' }}>
+        <Col>
+          <AuthButton
+            icon={Video}
+            text="Continue Anonymously"
+            variant="secondary"
+            onClick={() => navigate("/profileForm")}
+            />
+          </Col>
+          <Col>
+          <AuthButton
+            icon={UserCircle2}
+            text="Sign In"
+            variant="primary"
+            onClick={() => navigate("/signin")}
+            />
+            </Col>
+            <Col>
+          <AuthButton
+            icon={UserPlus}
+            text="Create Account"
+            variant="accent"
+            onClick={() => navigate("/register")}
+            />
+            </Col>
+        </div>
+      </Row>
+      
+      {showLogin && (
+        <LoginForm onToggleForm={() => setShowLogin(false)} />
+      )}
+    </Container>
+  );
+};
+
+export default App;
