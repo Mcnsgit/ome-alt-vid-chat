@@ -9,23 +9,18 @@ const path = require("path");
 const dbConnect = require('./src/db/dbConnect');
 const User = require( './src/models/UserSchema');
 const auth = require("./src/auth.js");
+const cors = require("cors");
 
 // execute database connection
 dbConnect();
 
 // Curb Cores Error by adding a header here
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-  );
-  next();
-});
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
+  credentials: true
+}));
 
 // body parser configuration
 app.use(bodyParser.json());
@@ -39,39 +34,27 @@ app.get("/", (request, response, next) => {
 
 // register endpoint
 app.post("/register", (request, response) => {
-  // hash the password
   bcrypt
     .hash(request.body.password, 10)
     .then((hashedPassword) => {
-      // create a new user instance and collect the data
       const user = new User({
         email: request.body.email,
         password: hashedPassword,
       });
 
-      // save the new user
-      user
-        .save()
-        // return success if the new user is added to the database successfully
-        .then((result) => {
-          response.status(201).send({
-            message: "User Created Successfully",
-            result,
-          });
-        })
-        // catch erroe if the new user wasn't added successfully to the database
-        .catch((error) => {
-          response.status(500).send({
-            message: "Error creating user",
-            error,
-          });
-        });
+      return user.save();
     })
-    // catch error if the password hash isn't successful
-    .catch((e) => {
-      response.status(500).send({
-        message: "Password was not hashed successfully",
-        e,
+    .then((result) => {
+      response.status(201).json({
+        message: "User Created Successfully",
+        result,
+      });
+    })
+    .catch((error) => {
+      console.error("Registration error:", error);
+      response.status(500).json({
+        message: "Error creating user",
+        error: error.message
       });
     });
 });

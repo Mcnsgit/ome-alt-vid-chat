@@ -20,32 +20,43 @@ export default function Login() {
     // prevent the form from refreshing the whole page
     e.preventDefault();
 
-    // set configurations
     const configuration = {
       method: "post",
-      url: "https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com/login",
+      url: "https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com/register",
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      withCredentials: true,
       data: {
         email,
         password,
       },
     };
-
-    // make the API call
+  
     axios(configuration)
       .then((result) => {
-        // set the cookie
         cookies.set("TOKEN", result.data.token, {
+          expires: result.data.expires,
           path: "/",
         });
-        // redirect user to the auth page
         window.location.href = "/auth";
-
         setLogin(true);
+        console.log(result);
       })
       .catch((error) => {
-        error = new Error();
+        console.error("Error:", error);
+        setLogin(false);
       });
   };
+  
+  //const handleLogout = (e) => { 
+  //  e.preventDefault();
+  //  cookies.remove("TOKEN", { path: "/" });
+  //  window.location.href = "/auth";
+  //}
+
+  
 
   return (
     <>

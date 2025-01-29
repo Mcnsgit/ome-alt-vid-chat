@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 import  { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
@@ -44,9 +45,8 @@ export default function AuthComponent() {
 
   return (
     <div className="text-center">
-      <h1>Auth Component</h1>
 
-      {/* displaying our message from our API call */}
+   
       <h3 className="text-danger">{message}</h3>
 
       {/* logout */}
