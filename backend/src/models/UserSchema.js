@@ -21,8 +21,22 @@ const userSchema = new mongoose.Schema({
     minlength: [6, "Password should be at least 6 characters"]
   },
   //For anonymous users
-    isAnonymous: { type: Boolean, default: false },
-    anonymousId: { type: String, unique: true },
+  isAnonymous: { 
+    type: Boolean, 
+    default: false 
+  },
+  anonymousId: { 
+    type: String, 
+    unique: true,
+    sparse: true,
+    validate: {
+      validator: function(v) {
+        // Only require anonymousId if isAnonymous is true
+        return !this.isAnonymous || (this.isAnonymous && v);
+      },
+      message: 'Anonymous users must have an anonymousId'
+    }
+  },
     tempInterest: [String],
 
     // Moderation tracking

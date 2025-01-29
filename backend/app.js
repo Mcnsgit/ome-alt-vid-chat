@@ -35,31 +35,31 @@ app.get("/", (request, response, next) => {
 // register endpoint
 app.post("/register", async (request, response) => {
   try {
-
-    
     const user = new User({
       email: request.body.email,
       password: request.body.password,
-      // Only set username if provided
-      ...(request.body.username && { username: request.body.username })
+      isAnonymous: false, // explicitly set this to false for registered users
+      lastActive: new Date(),
+      isActive: true
     });
 
     const result = await user.save();
     response.status(201).json({
       message: "User Created Successfully",
-      result
+      result: {
+        email: result.email,
+        isAnonymous: result.isAnonymous,
+        isActive: result.isActive
+      }
     });
   } catch (error) {
     console.error("Registration error:", error);
-    
     // Handle specific error types
     if (error.code === 11000) {
       return response.status(400).json({
         message: "Email already exists",
-        error: error.message
       });
     }
-    
     response.status(500).json({
       message: "Error creating user",
       error: error.message
