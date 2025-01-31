@@ -8,9 +8,7 @@ const dbConnect = require('./src/db/dbConnect');
 const User = require('./src/models/UserSchema');
 const auth = require("./src/auth.js");
 const cors = require("cors");
-const http = require('http').createServer(app);
-const socketIo = require('socket.io')(http);
-const chatHandler = require('./src/videoChat/handler');
+
 
 // Execute database connection
 dbConnect();
@@ -26,21 +24,6 @@ app.use(cors({
 // Body parser configuration
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-//initialise chathandler with socket.io and express
-const chat = chatHandler();
-chat.init(socketIo, app);
-
-//// Socket.io Connection
-//socketIo.on("connection", (socket) => {
-//  console.log("Connected");
-//  socket.on("message", (message) => {
-//    socket.broadcast.emit("message", message);
-//  });
-//  socket.on("disconnect", () => {
-//    console.log("Disconnected");
-//  });
-//});
 
 // Routes
 app.get("/", (request, response) => {
@@ -165,9 +148,15 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Start the server
-http.listen(process.env.PORT || 3000, () => {
-  console.log('Server is running on port', process.env.PORT || 3000);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
 
 module.exports = app;
+
