@@ -1,20 +1,21 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
-const authRoutes = require('./src/routes/authRoutes')
+const authRoutes = require('./src/routes/authRoutes');
 const path = require("path");
-//require database connection
 const dbConnect = require('./src/db/dbConnect');
-const User = require( './src/models/UserSchema');
+const User = require('./src/models/UserSchema');
 const auth = require("./src/auth.js");
 const cors = require("cors");
+const http = require('http').createServer(app);
+const socketIo = require('socket.io')(http);
+const chatHandler = require('./src/videoChat/handler');
 
-// execute database connection
+// Execute database connection
 dbConnect();
 
-// Curb Cores Error by adding a header here
+// CORS Configuration
 app.use(cors({
   origin: ['http://localhost:5173', 'https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -22,16 +23,29 @@ app.use(cors({
   credentials: true
 }));
 
-// body parser configuration
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Body parser configuration
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+//initialise chathandler with socket.io and express
+const chat = chatHandler();
+chat.init(socketIo, app);
 
-app.get("/", (request, response, next) => {
+//// Socket.io Connection
+//socketIo.on("connection", (socket) => {
+//  console.log("Connected");
+//  socket.on("message", (message) => {
+//    socket.broadcast.emit("message", message);
+//  });
+//  socket.on("disconnect", () => {
+//    console.log("Disconnected");
+//  });
+//});
+
+// Routes
+app.get("/", (request, response) => {
   response.json({ message: "Hey! This is your server response!" });
-  next();
 });
-
 // register endpoint
 app.post("/register", async (request, response) => {
   try {
@@ -42,7 +56,7 @@ app.post("/register", async (request, response) => {
       lastActive: new Date(),
       isActive: true
     });
-
+    
     const result = await user.save();
     response.status(201).json({
       message: "User Created Successfully",
@@ -79,7 +93,7 @@ app.post("/login", async (request, response) => {
         message: "Email and password are required"
       });
     }
-
+    
     // Find user by email
     const user = await User.findOne({ email: request.body.email });
     
@@ -89,17 +103,18 @@ app.post("/login", async (request, response) => {
         message: "Email not found"
       });
     }
-
+    
     // Compare password
     const passwordMatch = await bcrypt.compare(request.body.password, user.password);
     console.log("Password match result:", passwordMatch);
-
+    
     if (!passwordMatch) {
       return response.status(400).json({
         message: "Invalid password"
       });
     }
 
+    
     // Create JWT token
     const token = jwt.sign(
       {
@@ -127,20 +142,18 @@ app.post("/login", async (request, response) => {
   }
 });
 
-// free endpoint
+// Free endpoint
 app.get("/free-endpoint", (request, response) => {
   response.json({ message: "You are free to access me anytime" });
 });
 
-// authentication endpoint
+// Authentication endpoint
 app.get("/auth-endpoint", auth, (request, response) => {
   response.send({ message: "You are authorized to access me" });
 });
+
 // Serve static files from the React build directory
 app.use(express.static(path.join(__dirname, '../frontend/build')));
-
-//// Use auth routes
-//app.use('/api/auth', authRoutes);
 
 // Handle React routing, return all requests to React app
 app.get('*', (req, res) => {
@@ -150,6 +163,11 @@ app.get('*', (req, res) => {
 // Handle 404s
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
+});
+
+// Start the server
+http.listen(process.env.PORT || 3000, () => {
+  console.log('Server is running on port', process.env.PORT || 3000);
 });
 
 module.exports = app;

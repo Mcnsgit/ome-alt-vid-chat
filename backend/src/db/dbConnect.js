@@ -7,7 +7,7 @@ async function dbConnect() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    
+    console.log("Successfully connected to MongoDB.");
   } catch (error) {
     console.error("MongoDB connection error:", error);
     process.exit(1);  // Exit if we can't connect to the database
@@ -16,7 +16,6 @@ async function dbConnect() {
 
 module.exports = dbConnect;
 //drop whole database
-//console.log("Successfully connected to MongoDB.");
 //mongoose.connection.collections['users'].drop()
 //.then(() => console.log('Collection dropped'))
 //.catch(err => console.log('Drop collection error:', err));

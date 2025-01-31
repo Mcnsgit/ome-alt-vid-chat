@@ -37,21 +37,28 @@ const userSchema = new mongoose.Schema({
       message: 'Anonymous users must have an anonymousId'
     }
   },
-    tempInterest: [String],
-
-    // Moderation tracking
-    reportCount: { type: Number, default: 0 },
-    lastActive: Date,
-
-    // all users
-    isActive: { type: Boolean, default: false },
-    gender: { type: String, default: "Any" },
-    interests: [String],
-    location: { type: String, default: "" },
-    createdAt: { type: Date, default: Date.now },
-    reportedCount: { type: Number, default: 0 },
-  });
-
+   // New profile fields
+   preferredLanguage: {
+    type: String,
+    default: 'english',
+    enum: ['english', 'spanish', 'french']
+},
+  bio: {
+      type: String,
+      maxlength: 500
+  },
+  interests: [String],
+  gender: {
+      type: String,
+      default: "any",
+      enum: ["any", "male", "female", "other"]
+  },
+  location: String,
+  lastActive: { type: Date, default: Date.now },
+  isActive: { type: Boolean, default: false },
+  reportCount: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now }
+});
 // Hash password before saving
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
