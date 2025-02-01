@@ -41,8 +41,11 @@ const io = socketIo(server, {
   cors: {
     origin: ['http://localhost:5173', 'https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com'],
     methods: ["GET", "POST"],
-    credentials: true
-  }
+    credentials: true,
+    transports: ['websocket', 'polling']
+  },
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
 // Initialize chat handler
