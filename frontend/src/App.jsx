@@ -1,88 +1,44 @@
-import { Routes, Route } from "react-router-dom";
-import { Container, Col, Row } from "react-bootstrap";
-import Account from "./Account.jsx";
-import FreeComponent from "./FreeComponent";
-import AuthComponent from "./AuthComponent";
+import { Routes, Route, Link } from "react-router-dom";
+import { Container } from "react-bootstrap";
+import { useMemo } from "react";
+import HomePage from "./pages/HomePage.jsx";
 import ProtectedRoutes from "./ProtectedRoutes";
+import ProfileForm from "./components/Profile/ProfileForm";
+import io from 'socket.io-client';
+import VideoChatInterface from "./components/Chat/VideoChatInterface"; // Add this import
+import { Settings } from "lucide-react";
 
-function App() {
+const SERVER = import.meta.env.VITE_APP_SERVER_URL ? import.meta.env.VITEAPP_SERVER_URL : "https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com/";
+
+export default function App() {
+  const socket = useMemo(() => io(SERVER, {
+    transports: ['websocket'],
+    upgrade: false
+  }), []);
+  
   return (
-    <Container>
-      <Row>
-        <Col className="text-center">
-          <h1>React Authentication Tutorial</h1>
-    
-          <section id="navigation">
-            <a href="/">Home</a>
-            <a href="/free">Free Component</a>
-            <a href="/auth">Auth Component</a>
-          </section>
-        </Col>
-      </Row>
-    
-      {/* create routes here */}
-      <Routes>
-        <Route path="/" element={<Account />} />
-        <Route path="/free" element={<FreeComponent />} />
-        <Route path="/auth" element={<ProtectedRoutes component={AuthComponent} />} />
-      </Routes>
-    </Container>
+    <div className="cyber-app">
+      <nav className="cyber-nav">
+        <Link to="/" className="brand-logo neon-text">
+          CHATR0N
+        </Link>
+        <div className="nav-links">
+          <Link to="/settings" className="nav-link">
+            <Settings size={18} />
+          </Link>
+        </div>
+      </nav>
+
+      <Container>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/profile" element={<ProfileForm />} />
+            <Route path="/video-chat" element={<VideoChatInterface socket={socket} />} />
+          </Route>
+        </Routes>
+      </Container>
+    </div>
   );
 }
 
-export default App;
-//import { useState } from 'react'
-//import { Container, Col, Row, Card , Button} from "react-bootstrap";
-//import { useNavigate } from "react-router-dom";
-//import { Video, UserCircle2, UserPlus } from "lucide-react";
-//import Hero from './components/layout/Landing';
-//import {motion } from 'framer-motion'
-//import AuthButton from './components/layout/common/buttons/AuthButton';
-//import LoginForm  from './components/Auth/LoginForm';
-//import './App.css'
-
-//// App Component
-//const App = () => {
-//  const navigate = useNavigate();
-//  const [showLogin, setShowLogin] = useState(false);
-
-//  return (
-//    <Container className="position-relative py-5">
-
-//      <Row className="justify-content-center mt-5">
-//        <div className="d-flex flex-column gap-3" style={{ maxWidth: '400px' }}>
-//        <Col>
-//          <AuthButton
-//            icon={Video}
-//            text="Continue Anonymously"
-//            variant="secondary"
-//            onClick={() => navigate("/profileForm")}
-//            />
-//          </Col>
-//          <Col>
-//          <AuthButton
-//            icon={UserCircle2}
-//            text="Sign In"
-//            variant="primary"
-//            onClick={() => navigate("/signin")}
-//            />
-//            </Col>
-//            <Col>
-//          <AuthButton
-//            icon={UserPlus}
-//            text="Create Account"
-//            variant="accent"
-//            onClick={() => navigate("/register")}
-//            />
-//            </Col>
-//        </div>
-//      </Row>
-      
-//      {showLogin && (
-//        <LoginForm onToggleForm={() => setShowLogin(false)} />
-//      )}
-//    </Container>
-//  );
-//};
-
-//export default App;

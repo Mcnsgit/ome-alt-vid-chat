@@ -49,7 +49,7 @@ body {
   box-shadow: 0 0 20px rgba(0, 245, 212, 0.3);
 }
 
-.controls-bar {
+/*.controls-bar {
   z-index: 1000;
 }
 
@@ -60,4 +60,56 @@ body {
 
 .neon-text {
   text-shadow: 0 0 10px rgba(0, 245, 212, 0.5);
+}
+*/
+.cyber-app {
+  background: #0a0a12;
+  min-height: 100vh;
+  color: #00f7ff;
+}
+
+.cyber-nav {
+  padding: 1rem;
+  border-bottom: 2px solid #00f7ff44;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.neon-text {
+  text-shadow: 0 0 10px #00f7ff;
+}
+
+.cyber-gradient {
+  background: linear-gradient(45deg, #8A2BE2, #FF6B6B);
+  border: 1px solid #00f7ff;
+  color: white;
+}
+
+.video-chat-container {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 70vh;
+}
+
+.searching-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #000000aa;
+}
+
+.scanning-animation {
+  width: 200px;
+  height: 3px;
+  background: #00f7ff;
+  box-shadow: 0 0 10px #00f7ff;
+  animation: scan 2s infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
 }

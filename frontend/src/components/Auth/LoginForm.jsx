@@ -10,8 +10,10 @@ import { useNavigate } from "react-router-dom";
 const cookies = new Cookies();
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
   const [login, setLogin] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
     
-    console.log("Attempting login with email:", email);
+    console.log("Attempting login with email:", formData.email);
 
     const configuration = {
       method: "post",
@@ -29,10 +31,7 @@ export default function Login() {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      data: {
-        email,
-        password,
-      },
+      data: formData,
     };
   
     axios(configuration)
@@ -44,75 +43,50 @@ export default function Login() {
         });
         setLogin(true);
         setError("");
-        // Small delay before redirect to show success message
-        setTimeout(() => {
-          window.location.href = "/auth";
-        }, 1000);
+        navigate("/profile");
       })
       .catch((error) => {
-        console.error("Login error:", error);
-        setLogin(false);
-        setError(error.response?.data?.message || "Login failed. Please try again.");
+        setError(error.response?.data?.message || "Login failed");
       });
   };
 
   return (
-    <div className="login-form">
-      <h2>Login</h2>
-      <div className="mb-3">
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-
-        </div>
-      )}
-      <Form onSubmit={(e) => handleSubmit(e)}>
-        {/* email */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={() => navigate("/")}
-          className="btn btn-link text-teal poppins mb-5"
-          >
-          <ArrowLeft size={20} className="me-2" />
-          Back to Home
-        </motion.button>
-        <Form.Group controlId="formBasicEmail">
+    <div className="auth-card p-4 rounded shadow">
+      <h2 className="mb-4">Welcome Back</h2>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
           <Form.Label>Email address</Form.Label>
           <Form.Control
             type="email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter email"
-            />
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            required
+          />
         </Form.Group>
 
-        {/* password */}
-        <Form.Group controlId="formBasicPassword">
+        <Form.Group className="mb-3">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            name="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            />
+            value={formData.password}
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
+            required
+          />
         </Form.Group>
+        {login && <p className="text-success">Login Successful!</p>}
 
-{/* Success message */}
-{login && <p className="text-success">Login Successful!</p>}
-        {/* submit button */}
-        <Button
-        variant="primary"
-        type="submit"
-        onClick={(e) => handleSubmit(e)}
-        >
-        Login
-      </Button>
-    </Form>
-  </div>
-</div>
-);
+        {error && (
+          <div className="alert alert-danger">
+            {error}
+          </div>
+        )}
+
+        <Button variant="primary" type="submit" className="w-100">
+          Sign In
+        </Button>
+      </Form>
+    </div>
+  );
 }
     
 //import { motion } from 'framer-motion';
