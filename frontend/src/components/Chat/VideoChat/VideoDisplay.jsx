@@ -1,7 +1,14 @@
 // src/components/VideoChat/VideoDisplay.jsx
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 export function VideoDisplay({ videoRef, stream, isMuted, isLocal }) {
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream, videoRef]);
+
   return (
     <div className={`relative ${isLocal ? 'w-48' : 'w-full'} bg-gray-800 rounded-lg overflow-hidden`}>
       <video
@@ -21,8 +28,8 @@ export function VideoDisplay({ videoRef, stream, isMuted, isLocal }) {
 }
 
 VideoDisplay.propTypes = {
-  videoRef: PropTypes.any,
-  stream: PropTypes.any,
+  videoRef: PropTypes.object.isRequired,
+  stream: PropTypes.object,
   isMuted: PropTypes.bool,
   isLocal: PropTypes.bool
-}
+};

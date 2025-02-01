@@ -8,12 +8,12 @@ export function VideoChatLayout({ children, sidebar }) {
         <div className="lg:col-span-2 space-y-4">
           {children}
         </div>
-        {sidebar}
+        {sidebar} {/* Just render the sidebar directly */}
       </VideoChatContainer>
     );
 }
   
 VideoChatLayout.propTypes = {
   children: PropTypes.node.isRequired,
-  sidebar: PropTypes.node.isRequired,
-};  
+  sidebar: PropTypes.node,  // Make this optional
+};

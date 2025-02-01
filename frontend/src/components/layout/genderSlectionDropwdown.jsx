@@ -2,7 +2,7 @@ import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import './GenderSelectionDropdown.css'; // Assuming you create a CSS file for styles
 
-function GenderSelectionDropdown() {
+function  GenderSelectionDropdown() {
     const handleSelect = (eventKey) => {
         console.log(`Selected: ${eventKey}`);
         // Handle the selection logic here
