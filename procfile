@@ -1,1 +1,1 @@
-web: gunicorn Project.asgi:application --log-file
+web: gunicorn backend/Project.asgi:application --log-file
