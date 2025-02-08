@@ -35,7 +35,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    "https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com/",
+    "https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com",
     "localhost",
     "127.0.0.1",
     "*",
@@ -90,7 +90,7 @@ CSRF_TRUSTED_ORIGINS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware"
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -238,14 +238,17 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "media"),
 ]
 
-STATIC_URL = "/static/"
-MEDIA_URL = "/media/"
-
 STATIC_ROOT = os.path.join(BASE_DIR, "static_cdn")
+STATIC_URL = "/static/"
+
+MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media_cdn")
 
 TEMP = os.path.join(BASE_DIR, "media_cdn/temp")
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
