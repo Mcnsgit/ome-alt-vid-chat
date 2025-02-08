@@ -66,7 +66,7 @@ six==1.16.0
 social-auth-app-django==5.4.2
 social-auth-core==4.5.4
 sqlparse==0.5.1
-Twisted==24.3.0
+Twisted==24.7.0
 txaio==23.1.1
 typing_extensions==4.12.2
 tzdata==2024.1
