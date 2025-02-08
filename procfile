@@ -1,1 +1,2 @@
-web: gunicorn --pythonpath backend Project.wsgi:application
+release: cd backend && python manage.py migrate
+web: cd backend && gunicorn Project.wsgi:application
