@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: vite-react-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: "https://video-chat-app-auth-8e4fccddfb7f.herokuapp.com/"
+      - key: VITE_WS_URL
+        value: "wss://topical-camel-12492.upstash.io"

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -19,8 +20,18 @@ export default defineConfig({
         ws: true
       },
       '/api': {
-        target: 'http://localhost:3000',
+        target: import.meta.env.VITE_API_URL,
+        changeOrigin: true,
+        secure: false,
+      },
+      '/ws': {
+        target: import.meta.env.VITE_WS_URL,
+        ws: true,
       }
     }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true  
   }
 });
