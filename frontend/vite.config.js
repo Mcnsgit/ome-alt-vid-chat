@@ -1,37 +1,20 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@': '/src'
-    }
-  },
-  define: {
-    global: 'window',
-  },
   server: {
-    port: 5173,
+    port: 3000,
     proxy: {
-      '/socket.io': {
-        target: 'http://localhost:3000',
-        ws: true
-      },
       '/api': {
-        target: import.meta.env.VITE_API_URL,
+        target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
       },
       '/ws': {
-        target: import.meta.env.VITE_WS_URL,
+        target: 'ws://localhost:8000',
         ws: true,
       }
     }
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true  
   }
 });

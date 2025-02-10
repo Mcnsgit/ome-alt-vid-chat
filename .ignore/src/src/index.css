@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Primary Colors - Adjusted for better contrast */
+  --electric-purple: #9B4DFF; /* Brightened for better visibility */
+  --neon-pink: #FF7B7B;      /* Adjusted for WCAG AA compliance */
+  --cyber-teal: #00E5C5;     /* Adjusted for better contrast */
+  --dark-gray: #121214;      /* Darkened for better contrast */
+  
+  /* Semantic colors with guaranteed contrast ratios */
+  --text-primary: #FFFFFF;    /* For main text - passes WCAG AAA */
+  --text-secondary: #E0E0E0;  /* For secondary text - passes WCAG AA */
+  --text-accent: #00f7ff;     /* For accent text - passes WCAG AA */
+  
+  /* Background colors */
+  --bg-primary: #0a0a12;      /* Main background */
+  --bg-secondary: #16161e;    /* Secondary background */
+  --bg-overlay: rgba(10, 10, 18, 0.9); /* For overlays */
+  
+  /* Interactive elements */
+  --interactive-default: #9B4DFF;
+  --interactive-hover: #AB6FFF;
+  --interactive-active: #8B2FFF;
+  
+  /* Focus states */
+  --focus-ring: #00f7ff;
+  --focus-ring-width: 3px;
+}
+
+/* Base styles with improved readability */
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accessible gradient background */
+.gradient-bg {
+  background: linear-gradient(135deg, var(--electric-purple), var(--neon-pink));
+}
+
+/* Improved neon text effect with better contrast */
+.neon-text {
+  color: var(--text-accent);
+  text-shadow: 
+    0 0 10px rgba(0, 247, 255, 0.7),
+    0 0 20px rgba(0, 247, 255, 0.5);
+  font-weight: 600;
+}
+
+/* Improved glassmorphism with better visibility */
+.glassmorphism-effect {
+  background: var(--bg-overlay);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Video container with improved visibility */
+.video-container {
+  position: relative;
+  height: 80vh;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+/* Video elements with proper aspect ratios */
+.remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--bg-secondary);
+}
+
+.local-video-preview {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 200px;
+  height: 150px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 229, 197, 0.3);
+  border: 2px solid var(--cyber-teal);
+}
+
+/* Main app container */
+.cyber-app {
+  background: var(--bg-primary);
+  min-height: 100vh;
+  color: var(--text-primary);
+}
+
+/* Navigation with improved contrast */
+.cyber-nav {
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-bottom: 2px solid rgba(0, 247, 255, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Improved gradient button with better contrast */
+.cyber-gradient {
+  background: linear-gradient(45deg, var(--electric-purple), var(--neon-pink));
+  border: 2px solid var(--text-accent);
+  color: var(--text-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: linear-gradient(45deg, var(--interactive-hover), var(--neon-pink));
+    box-shadow: 0 0 15px rgba(0, 247, 255, 0.3);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring);
+  }
+}
+
+/* Video chat container with improved visibility */
+.video-chat-container {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 70vh;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(0, 247, 255, 0.2);
+}
+
+/* Improved overlay visibility */
+.searching-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+
+/* Enhanced scanning animation */
+.scanning-animation {
+  width: 200px;
+  height: 3px;
+  background: var(--text-accent);
+  box-shadow: 
+    0 0 10px var(--text-accent),
+    0 0 20px rgba(0, 247, 255, 0.5);
+  animation: scan 2s infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .scanning-animation {
+    animation: none;
+  }
+  
+  * {
+    transition: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .cyber-gradient {
+    border: 2px solid ButtonText;
+  }
+  
+  .neon-text {
+    text-shadow: none;
+  }
+}

@@ -1,2 +1,2 @@
 release: python manage.py migrate
-web: gunicorn Project.wsgi:application
+web: daphne Project.asgi:application --port $PORT --bind 0.0.0.0

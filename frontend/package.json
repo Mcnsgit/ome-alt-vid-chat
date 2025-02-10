@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "cp -r dist ../backend/static/",
     "lint": "eslint .",
     "preview": "vite preview"
   },
