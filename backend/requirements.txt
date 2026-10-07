@@ -71,7 +71,7 @@ txaio==23.1.1
 typing_extensions==4.12.2
 tzdata==2024.1
 uritemplate==4.1.1
-urllib3==2.2.2
+urllib3==2.8.0
 websockets==11.0.1
 whitenoise==6.7.0
 zope.component==6.0
